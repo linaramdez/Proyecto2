@@ -1,0 +1,105 @@
+Crear fichero
+touch nombrefichero
+
+ver archivos de la carpeta
+ll
+
+crear fichero oculto
+touch .nombrefichero
+
+muestra archivos ocultos
+ls -a
+
+mostrar archivos de carpeta en formato largo
+ls -a -l  "o tambien" ls -al
+
+eliminar un directorio
+rm -rf 
+-r:recursiva
+-f:forzar
+
+---COMANDOS DE GIT-----
+
+comprobar es que estado está el repositorio, si hay algo para trackear o si hay algo pendiente de commit
+git status
+
+iniciar git
+git init
+
+cambiar branch
+git checkout nombrebranch
+
+destrackear fichero
+git rm --cached <file>
+
+trackear fichero
+git add
+
+trackear todos los ficheros
+git add .
+
+crear branch
+git branch nombrebranch
+
+hacer commit
+//siempre que se hace un commit es obligatorio poner un mensaje
+git commit -m "mensaje"
+
+para renombrar una rama
+entro a la rama
+git branch -M nuevonombre
+
+
+
+mirar si una carpeta es un repositorio de git
+git status
+si sale fatal:... no es
+
+se inicia git dentro de la carpeta que quiero volver repositorio
+git init
+
+git status 
+si dice on branch... ya estamos y sale una carpeta .git(base de datos para este repositorio) y esto garantiza que a partir de ahora es un repositorio
+y el .git nunca lo tocaremos
+
+ver los commits
+git log
+
+clonar repositorio en github para llevarlo a mi local
+git clone
+
+
+crear repositorio
+1. crear directorio:mkdir nombredir
+2.inicializarlo: cd nombredir /debemos estar dentro de la carpeta para volver repositorio la carpeta
+3.volverlo repositorio: git init
+4.verificar:git status
+
+
+sincronizar mi repositorio local
+entro al github
+
+flujo de trabajo con 
+1.Crear repositorio
+2.Modificar archivos
+3.git add
+4.git commit
+
+
+Pasos para descargar las actividades las actividades
+
+1. copiar el enlace del repositorio
+-pestaña code
+2. en el terminal ejecutar el comando en la carpeta destinada
+-git clone enlace
+3.entrar al repositorio
+-cd nombrerepositorio (nota:para encontrar el nombre exacto se hace un ls en la carpeta)
+4. se pasa al jupiter y se puede empezar a modificar todo
+
+Pasos para subir al git las actividades
+
+cuando termino la actividad dentro de la carperta hago:
+git add .
+git commit -m "comentario"
+git push
+
