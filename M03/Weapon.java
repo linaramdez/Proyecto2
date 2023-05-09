@@ -8,9 +8,10 @@ public class Weapon {
 	private String urlImatge;
 	private int plusVelocitat;
 	private int plusForça;
+	private int punts;
 	
 	// Constructor
-	
+
 	public Weapon(int id, String name, String urlImatge, int plusVelocitat, int plusForça) {
 		super();
 		this.id = id;
@@ -90,10 +91,24 @@ public class Weapon {
 		this.plusForça = plusForça;
 	}
 	
+	/**
+	 * @return the punts
+	 */
+	public int getPunts() {
+		return punts;
+	}
+
+	/**
+	 * @param punts the punts to set
+	 */
+	public void setPunts(int punts) {
+		this.punts = punts;
+	}
+	
 	@Override
 	public String toString() {
 		return "Weapon [id=" + id + ", name=" + name + ", urlImatge=" + urlImatge + ", plusVelocitat=" + plusVelocitat
-				+ ", plusForça=" + plusForça + "]";
+				+ ", plusForça=" + plusForça + ", punts=" + punts + "]";
 	}
 	
 }

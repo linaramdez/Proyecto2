@@ -45,16 +45,12 @@ public class Batalla {
 
 		finestra = new InterficieGrafica();
 		ventanaPrincipal = new VentanaPrincipal();
-		
-		warrior1 = VentanaPrincipal.seleccionarRandomWarrior(warriors);
+
 		warrior2 = VentanaPrincipal.seleccionarRandomWarrior(warriors);
 		
-		System.out.println(warrior1.getNom());
 		System.out.println(warrior2.getNom());
 		
-		ventanaPrincipal.inicialitzarImatges(warrior1.getUrlImatge(), warrior2.getUrlImatge());
-		ventanaPrincipal.obtenirWarrior(warrior1, warrior2);
-		
+		ventanaPrincipal.inicialitzarImatges("imagenes/anonim.jpg", warrior2.getUrlImatge());
 		ventanaPrincipal.setVisible(true);
 		
 	}

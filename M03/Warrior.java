@@ -13,6 +13,7 @@ public class Warrior {
 	private String urlImatge;
 	private String type;
 	private Weapon arma;
+	private int raca;
 	
 	// Constructor
 	
@@ -146,7 +147,7 @@ public class Warrior {
 	 * @return the arma
 	 */
 	public Weapon getArma() {
-		return arma;
+		return this.arma;
 	}
 
 	/**
@@ -172,11 +173,25 @@ public class Warrior {
 		this.type = type;
 	}
 	
+	/**
+	 * @return the raca
+	 */
+	public int getRaca() {
+		return raca;
+	}
+
+	/**
+	 * @param raca the raca to set
+	 */
+	public void setRaca(int raca) {
+		this.raca = raca;
+	}
+
 	@Override
 	public String toString() {
 		return "Warrior [id=" + id + ", nom=" + nom + ", puntsVida=" + puntsVida + ", força=" + força + ", velocitat="
 				+ velocitat + ", agilitat=" + agilitat + ", defensa=" + defensa + ", urlImatge=" + urlImatge + ", type="
-				+ type + ", arma=" + arma + "]";
+				+ type + ", arma=" + arma + ", raça=" + raca + "]";
 	}
 	
 	
