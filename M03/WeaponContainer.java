@@ -33,7 +33,7 @@ public class WeaponContainer {
     
     public void carregarWeaponsFromDB() {
     	
-    	String urlDatos = "jdbc:mysql://localhost/batalla?serverTimezone=UTC";
+    	String urlDatos = "jdbc:mysql://localhost/battlerace?serverTimezone=UTC";
 		String usuario = "root";
 		String pass = "1234";
         Connection conn = null;
@@ -106,7 +106,6 @@ public class WeaponContainer {
                 }
             }
             
-            System.out.println("S'ha creat la connexio y l'arryList weapons");
             
         } catch (SQLException e) {
         	

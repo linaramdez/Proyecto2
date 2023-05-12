@@ -18,7 +18,7 @@ public class Warrior {
 	// Constructor
 	
 	public Warrior(int id, String nom, int puntsVida, int força, int velocitat, int agilitat, int defensa,
-			String urlImatge, String type) {
+			String urlImatge, String type, int raca) {
 		super();
 		this.id = id;
 		this.nom = nom;
@@ -29,6 +29,7 @@ public class Warrior {
 		this.defensa = defensa;
 		this.urlImatge = urlImatge;
 		this.type = type;
+		this.raca = raca;
 	}
 
 	/**

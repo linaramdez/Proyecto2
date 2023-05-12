@@ -5,11 +5,10 @@ public class Batalla {
 	private WarriorContainer warriorContainer;
 	private WeaponContainer weaponContainer;
 	private ArrayList<Warrior> warriors;
-	private ArrayList<Weapon> weapons;
 	private InterficieGrafica finestra;
 	private VentanaPrincipal ventanaPrincipal;
-	private Warrior warrior1;
 	private Warrior warrior2;
+	private boolean esInici;
 	
 	// Carreguem els guerrers i armes que hi han a la bdd i els insertem a l'arrayList
 	
@@ -36,7 +35,7 @@ public class Batalla {
 		}
 		
 		warriors = warriorContainer.getArrayListWarrior();
-		weapons = weaponContainer.getArrayListWeapons();
+
 	}
 	
 	// Creem la interficie gràfica i seleccionem guerrers i armes
@@ -45,13 +44,13 @@ public class Batalla {
 
 		finestra = new InterficieGrafica();
 		ventanaPrincipal = new VentanaPrincipal();
+		
+		esInici = true;
 
 		warrior2 = VentanaPrincipal.seleccionarRandomWarrior(warriors);
-		
-		System.out.println(warrior2.getNom());
-		
-		ventanaPrincipal.inicialitzarImatges("imagenes/anonim.jpg", warrior2.getUrlImatge());
+		ventanaPrincipal.inicialitzarImatges("imagenes/anonim.jpg", warrior2.getUrlImatge(), esInici);
 		ventanaPrincipal.setVisible(true);
+		ventanaPrincipal.identificacioUsuari();
 		
 	}
 

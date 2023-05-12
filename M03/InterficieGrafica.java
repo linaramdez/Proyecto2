@@ -16,17 +16,22 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Random;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 public class InterficieGrafica {
 
@@ -48,21 +53,31 @@ class VentanaPrincipal extends JFrame{
 	progressBar22, progressBar23, progressBar24;
 	private ImageIcon imatgeWarrior1, imatgeWarrior2, imatgeWeapon1, imatgeWeapon2, imagenOriginal, imagenFinal;
 	private JLabel power1, power2, agility1, agility2, speed1, speed2, defense1, defense2, imatge1, imatge2, imatge3, imatge4, humans, elfs, nans, interaccio;
-	private JFrame ventana2, ventana3;
+	private JFrame ventana2, ventana3, ventana4;
 	private Image imagen, imagenRedimensionada;
 	private ArrayList<String> textArmes;
 	private ArrayList<JLabel> labelArmes;
     private WarriorContainer warriorContainer;
     private WeaponContainer weaponContainer;
     private int warriorSeleccionat;
+    private Warrior warrioreal;
+    private Warrior warriorbot;
     private boolean aTriatWarrior = false;
     private boolean aTriatWeapon = false;
-	String urlDatos = "jdbc:mysql://localhost/batalla?serverTimezone=UTC";
-	String usuario = "root";
-	String pass = "1234";
-    Connection conn = null;
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
+    private boolean esInici = false;
+    private int playerId = -1;
+    private int puntuacio = 0;
+	private int danyCausat = 0;
+	private int danyRebut = 0;
+	private int batallesGuanyades = 0;
+    private String nomUsuari = "";
+	private String urlDatos = "jdbc:mysql://localhost/battlerace?serverTimezone=UTC";
+	private String usuario = "root";
+	private String pass = "1234";
+    private Connection conn = null;
+    private PreparedStatement stmt = null;
+    private ResultSet rs = null;
+    private Statement statement = null;
 	
 	VentanaPrincipal() {
 		
@@ -90,9 +105,18 @@ class VentanaPrincipal extends JFrame{
 		scroll = new JScrollPane(consola);
 		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		
+		// Creem l'objecte warriorContainer i weaponContainer
+		
+		warriorContainer = new WarriorContainer();
+		warriorContainer.carregarWarriorsFromDB();
+		weaponContainer = new WeaponContainer();
+		weaponContainer.carregarWeaponsFromDB();
+		
 		// Creem els objectes botons
 		
 		boto1 = new JButton("Choose Character");
+		
+		// Es farà això quan es dona clic al botó de triar warrior
 		
 		boto1.addActionListener(new ActionListener() {
 
@@ -198,6 +222,8 @@ class VentanaPrincipal extends JFrame{
 		
 		boto2 = new JButton("Choose Weapon");
 		
+		// Es farà això quan es dona clic al botó de triar weapon
+		
 		boto2.addActionListener(new ActionListener() {
 
 				@Override
@@ -261,14 +287,103 @@ class VentanaPrincipal extends JFrame{
 			});
 
 		boto3 = new JButton("Ranking");
+		
+		boto3.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ventana4 = new JFrame("Ranking");
+				ventana4.setLayout(new GridLayout(9, 5));
+				JLabel player, punts, won, inCaused, inSuffered;
+				
+				player = new JLabel("Player ID");
+				punts = new JLabel("Puntuació global");
+				won = new JLabel("Enemics derrotats");
+				inCaused = new JLabel("Dany realitzat");
+				inSuffered = new JLabel("Dany rebut");
+				
+				ventana4.add(player);
+	            ventana4.add(punts);
+	            ventana4.add(won);
+	            ventana4.add(inCaused);
+	            ventana4.add(inSuffered);
+				
+				try {
+					
+		            // Crear una declaración SQL
+		            Statement stmt = conn.createStatement();
+
+		            // Ejecutar la consulta
+		            String query = "SELECT player_id, " +
+		                    "SUM(battle_points) AS total_score, " +
+		                    "COUNT(CASE WHEN battle_points > 0 THEN 1 ELSE NULL END) AS battles_won, " +
+		                    "SUM(injuries_caused) AS total_damage_caused, " +
+		                    "SUM(injuries_suffered) AS total_damage_taken " +
+		                    "FROM battle " +
+		                    "GROUP BY player_id " +
+		                    "ORDER BY total_score DESC " +
+		                    "LIMIT 8";
+
+		            ResultSet rs = stmt.executeQuery(query);
+
+		            // Recorrer los resultados y asignarlos a las variables
+		            while (rs.next()) {
+		            	
+		                playerId = rs.getInt("player_id");
+		                puntuacio = rs.getInt("total_score");
+		                batallesGuanyades = rs.getInt("battles_won");
+		                danyCausat = rs.getInt("total_damage_caused");
+		                danyRebut = rs.getInt("total_damage_taken");
+		                
+		                // Imprimir los valores obtenidos como ejemplo
+		                System.out.println("Player ID: " + playerId);
+		                System.out.println("Total Score: " + puntuacio);
+		                System.out.println("Battles Won: " + batallesGuanyades);
+		                System.out.println("Total Damage Caused: " + danyCausat);
+		                System.out.println("Total Damage Taken: " + danyRebut);
+		                System.out.println("--------------------------");
+		                
+		                JLabel playerIdLabel = new JLabel(Integer.toString(playerId));
+		                JLabel totalScoreLabel = new JLabel(Integer.toString(puntuacio));
+		                JLabel battlesWonLabel = new JLabel(Integer.toString(batallesGuanyades));
+		                JLabel totalDamageCausedLabel = new JLabel(Integer.toString(danyCausat));
+		                JLabel totalDamageTakenLabel = new JLabel(Integer.toString(danyRebut));
+
+		                ventana4.add(playerIdLabel);
+		                ventana4.add(totalScoreLabel);
+		                ventana4.add(battlesWonLabel);
+		                ventana4.add(totalDamageCausedLabel);
+		                ventana4.add(totalDamageTakenLabel);
+		               
+		            }
+		            
+		            
+		            ventana4.setSize(800, 650);
+					ventana4.setVisible(true);  
+		            
+
+		        } catch (SQLException x) {
+		            x.printStackTrace();
+		        }
+				
+			}
+			
+		});
+		
 		boto4 = new JButton("Fight");
+		
+		// Es farà això quan es dona clic al botó de lluitar
 		
 		boto4.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (aTriatWarrior && aTriatWeapon) {
-					consola.setText("COMENÇA LA LLUITA");
+					Warrior luchadores[]= new Warrior[2];
+					consola.append("COMENÇA LA LLUITA");
+					luchadores[0]=warrioreal;
+					luchadores[1]=warriorbot;
+					iniciarLluita(luchadores, warrioreal, warriorbot);
 				} else {
 					consola.setText("Has de triar un guerrer i un arma disponible");
 				}
@@ -277,6 +392,8 @@ class VentanaPrincipal extends JFrame{
 		});
 		
 		boto5 = new JButton("Clear Console");
+		
+		// Es farà això quan es dona clic al botó de netejar la consola
 		
 		boto5.addActionListener(new ActionListener() {
 
@@ -287,7 +404,7 @@ class VentanaPrincipal extends JFrame{
 			
 		});
 		
-		// Seleccionem un warrior i actualitzem la seva imatge
+		// Creem els objectes ImageIcon
 		
 		imatgeWarrior1 = new ImageIcon();
 		imatgeWeapon1 = new ImageIcon();
@@ -390,6 +507,30 @@ class VentanaPrincipal extends JFrame{
 
 	}
 	
+	// Aquest mètode identifica a l'usuari amb un player_id únic i un nom que introdueix l'usuari
+	
+	public void identificacioUsuari() {
+		
+	    String nomUsuari = null;
+
+	    while (nomUsuari == null || nomUsuari.isBlank()) {
+	        nomUsuari = JOptionPane.showInputDialog(null, "Introdueix el teu nom d'usuari:");
+
+	        // Comprobar si se ingresó un nombre de usuario válido
+	        if (nomUsuari != null && !nomUsuari.isBlank()) {
+	            // El nombre de usuario se asigna a una variable dentro del programa
+	            insertPlayer(nomUsuari);
+	            consola.setText("Benvingut/da " + nomUsuari + "!");
+	        } else {
+	            // El usuario canceló o no ingresó un nombre de usuario válido
+	            consola.setText("No s'ha introduit un nom d'usuari vàlid.");
+	        }
+	    }
+	}
+	
+	
+	// Aquest mètode crea els progressBar
+	
 	static JProgressBar crearProgressBar(int minimum, int maximum, int value, boolean stringPainted, Color foregroundColor) {
 		
 	    JProgressBar progressBar = new JProgressBar();
@@ -402,26 +543,29 @@ class VentanaPrincipal extends JFrame{
 	    return progressBar;
 	}
 	
+	// Aquest mètode selecciona un warriorbot aleatori
+	
+	
 	static Warrior seleccionarRandomWarrior(ArrayList<Warrior> warriors) {
 		
         Random random = new Random();
         int index = random.nextInt(warriors.size()); 
         Warrior randomWarrior = warriors.get(index);
         
-        return randomWarrior;
-        
+        return randomWarrior;   
     }
 	
-	public void inicialitzarImatges(String url1, String url2) {
-		
-		warriorContainer = new WarriorContainer();
-		warriorContainer.carregarWarriorsFromDB();
-		
+	// Aquest mètode inicialitza les imatges dels dos warriors
+	
+	public void inicialitzarImatges(String url1, String url2, boolean esInici) {
+
 		imatgeWarrior1 = new ImageIcon(url1);
 		imatge1.setIcon(imatgeWarrior1);
 		
-		imatgeWeapon1 = new ImageIcon("imagenes/x.jpg");
-		imatge3.setIcon(imatgeWeapon1);
+		if (esInici) {
+			imatgeWeapon1 = new ImageIcon("imagenes/x.jpg");
+			imatge3.setIcon(imatgeWeapon1);
+		}
 		
 		imatgeWarrior2 = new ImageIcon(url2);
 		imatge2.setIcon(imatgeWarrior2);
@@ -435,10 +579,9 @@ class VentanaPrincipal extends JFrame{
 		}
 	}
 	
+	// Aquest mètode inicialitza l'arma del warriorbot
+	
 	public void inicialitzarArmaWarrior(Warrior warrior2) {
-		
-		weaponContainer = new WeaponContainer();
-		weaponContainer.carregarWeaponsFromDB();
         
         try {
             conn = DriverManager.getConnection(urlDatos, usuario, pass);
@@ -474,6 +617,8 @@ class VentanaPrincipal extends JFrame{
 		
 	}
 	
+	// Aquest mètode inicialitza els valors del warriorbot
+	
 	public void inicialitzarValorsWarrior2(Warrior warrior2, Weapon arma) {
 		
 		progressBar21.setValue(warrior2.getForça() * 10 + arma.getPlusForça() * 10 );
@@ -481,7 +626,11 @@ class VentanaPrincipal extends JFrame{
 		progressBar23.setValue(warrior2.getVelocitat() * 10 +  arma.getPlusVelocitat() * 10);
 		progressBar24.setValue(warrior2.getDefensa() * 10);
 		
+		warriorbot=warrior2;
+		
 	}
+	
+	// Aquest mètode actualitza la imatge del warrioreal
 	
 	public void actualitzarImatgeWarriorTriat(String url) {
 		
@@ -490,11 +639,10 @@ class VentanaPrincipal extends JFrame{
 
 	}
 	
+	// Aquest mètode actualitza els valors del warrioreal
+	
 	public void actualitzarValorsWarriorTriat(String url) {
-		
-		warriorContainer = new WarriorContainer();
-		warriorContainer.carregarWarriorsFromDB();
-		
+
 		for (Warrior e: warriorContainer.getArrayListWarrior()) {
 			
 			if (e.getUrlImatge().equals(url)) {
@@ -509,16 +657,16 @@ class VentanaPrincipal extends JFrame{
 		}
 	}
 	
-	public void actualitzarValorsWarriorTriat2(Integer warrior_id, Weapon arma) {
-		
-		warriorContainer = new WarriorContainer();
-		warriorContainer.carregarWarriorsFromDB();
+	// Aquest mètode actualitza els valors del warrioreal quan ja té la seva arma
+	
+	public void actualitzarValorsWarriorTriat2(Integer warrior_id, Weapon arma) {;
 		
 		for (Warrior e: warriorContainer.getArrayListWarrior()) {
 			
 			if (e.getId() == warrior_id) {
 				
-				e.setArma(arma);
+				warrioreal= e;
+				warrioreal.setArma(arma);
 				
 				progressBar11.setValue(e.getForça() * 10 + arma.getPlusForça() * 10);
 				progressBar12.setValue(e.getAgilitat() * 10);
@@ -529,11 +677,10 @@ class VentanaPrincipal extends JFrame{
 		}
 	}
 	
+	// Aquest mètode ompla un array amb les armes que té disponible el warrior i verifica si la que ha triat està disponible o no
+	
 	public void armesDisponibles(String url) {
-		
-		weaponContainer = new WeaponContainer();
-		weaponContainer.carregarWeaponsFromDB();
-        
+
         try {
             conn = DriverManager.getConnection(urlDatos, usuario, pass);
             String query = "SELECT weapon_id FROM weapons_available WHERE warrior_id = ?";
@@ -567,5 +714,320 @@ class VentanaPrincipal extends JFrame{
         }
        
 	}
+	
+	// Aquest mètode inicia la lluita
+	
+	public void iniciarLluita(Warrior[] luchadores, Warrior warriorreal, Warrior warriorbot) {
+	    SwingWorker<Void, String> worker = new SwingWorker<Void, String>() {
+	        @Override
+	        protected Void doInBackground() throws Exception {
+	            lluita(luchadores, warriorreal, warriorbot);
+	            return null;
+	        }
+
+	        @Override
+	        protected void process(java.util.List<String> chunks) {
+	            SwingUtilities.invokeLater(() -> {
+	                for (Object chunk : chunks) {
+	                    consola.append(chunk.toString() + "\n");
+	                }
+	            });
+	        }
+
+	        @Override
+	        protected void done() {
+	            // La batalla ha finalizado
+	            consola.append("Batalla finalitzada");
+	        }
+	    };
+
+	    worker.execute();
+	}
+
+	// Aquest mètode executa la mecànica de la lluita
+	
+	public void lluita(Warrior[] luchadores, Warrior warrioreal, Warrior warriorbot) {
+		
+		int vidaInicialWarriorReal = warrioreal.getPuntsVida();
+		int vidaInicialWarriorBot = warriorbot.getPuntsVida();
+
+		
+		if (luchadores[0].getVelocitat()>luchadores[1].getVelocitat()) {
+			while(luchadores[0].getPuntsVida()>0 && luchadores[1].getPuntsVida()>0) {
+				consola.append("\n" + "Torn de "+luchadores[0].getNom());
+				int exit= (int) (Math.random() * 99) + 1;
+				if(luchadores[0].getAgilitat()*10>exit) {
+					consola.append("L'atac ha tingut exit!!");
+					int esquivar= (int) (Math.random() * 49) + 1;
+					if(luchadores[0].getAgilitat()>esquivar) {
+						consola.append("\n" + "El defensor ha esquivat l'atac!!");
+					}else {
+						int dany = (luchadores[0].getForça()+luchadores[0].getArma().getPlusForça())-luchadores[1].getDefensa();
+						consola.append("\n" + "El defensor ha rebut "+dany+" punts de dany!!");
+						luchadores[1].setPuntsVida(luchadores[1].getPuntsVida()-dany);
+					}
+				}else {
+					consola.append("\n" + "L'atac no s'ha pogut efectuar, no ha tingut exit!!");}
+				if(luchadores[0].getVelocitat()+luchadores[0].getArma().getPlusVelocitat() <= luchadores[1].getVelocitat()+luchadores[1].getArma().getPlusVelocitat()) {
+					Collections.swap(Arrays.asList(luchadores),0,1);
+				}else {
+					int num= (int) (Math.random() * 99) + 1;
+					if(((luchadores[0].getVelocitat()+luchadores[0].getArma().getPlusVelocitat())-(luchadores[1].getVelocitat()+luchadores[1].getArma().getPlusVelocitat()))*10>num){
+						consola.append("\n" + luchadores[0].getNom()+" torna a atacar!!");
+					}else {
+						Collections.swap(Arrays.asList(luchadores),0,1);
+					}
+				}delay(1000);
+			}
+		}
+		else if(luchadores[0].getVelocitat()<luchadores[1].getVelocitat()) {
+			Collections.swap(Arrays.asList(luchadores),0,1);
+			while(luchadores[0].getPuntsVida()>0 && luchadores[1].getPuntsVida()>0) {
+				consola.append("Torn de "+luchadores[0].getNom());
+				int exit= (int) (Math.random() * 99) + 1;
+				if(luchadores[0].getAgilitat()*10>exit) {
+					consola.append("\n" + "L'atac ha tingut exit!!");
+					int esquivar= (int) (Math.random() * 49) + 1;
+					if(luchadores[0].getAgilitat()>esquivar) {
+						consola.append("\n" + "El defensor ha esquivat l'atac!!");
+					}else {
+						int dany = (luchadores[0].getForça()+luchadores[0].getArma().getPlusForça())-luchadores[1].getDefensa();
+						consola.append("\n" + "El defensor ha rebut "+dany+" punts de dany!!");
+						luchadores[1].setPuntsVida(luchadores[1].getPuntsVida()-dany);
+					}
+				}else {consola.append("\n" + "L'atac no s'ha pogut efectuar, no ha tingut exit!!");}
+				if(luchadores[0].getVelocitat()+luchadores[0].getArma().getPlusVelocitat() <= luchadores[1].getVelocitat()+luchadores[1].getArma().getPlusVelocitat()) {
+					Collections.swap(Arrays.asList(luchadores),0,1);
+				}else {
+					int num= (int) (Math.random() * 99) + 1;
+					if(((luchadores[0].getVelocitat()+luchadores[0].getArma().getPlusVelocitat())-(luchadores[1].getVelocitat()+luchadores[1].getArma().getPlusVelocitat()))*10>num){
+						consola.append("\n" + luchadores[0].getNom()+" torna a atacar!!");
+					}else {
+						Collections.swap(Arrays.asList(luchadores),0,1);
+					}
+				}delay(1000);
+			}
+		}
+		else {
+			if(luchadores[0].getAgilitat()>luchadores[1].getAgilitat()) {
+				while(luchadores[0].getPuntsVida()>0 && luchadores[1].getPuntsVida()>0) {
+					consola.append("\n" + "Torn de "+luchadores[0].getNom());
+					int exit= (int) (Math.random() * 99) + 1;
+					if(luchadores[0].getAgilitat()*10>exit) {
+						consola.append("L'atac ha tingut exit!!");
+						int esquivar= (int) (Math.random() * 49) + 1;
+						if(luchadores[0].getAgilitat()>esquivar) {
+							consola.append("\n" + "El defensor ha esquivat l'atac!!");
+						}else {
+							int dany = (luchadores[0].getForça()+luchadores[0].getArma().getPlusForça())-luchadores[1].getDefensa();
+							consola.append("\n" + "El defensor ha rebut "+dany+" punts de dany!!");
+							luchadores[1].setPuntsVida(luchadores[1].getPuntsVida()-dany);
+							
+							
+						}
+					}else {consola.append("\n" + "L'atac no s'ha pogut efectuar, no ha tingut exit!!");}
+					if(luchadores[0].getVelocitat()+luchadores[0].getArma().getPlusVelocitat() <= luchadores[1].getVelocitat()+luchadores[1].getArma().getPlusVelocitat()) {
+						Collections.swap(Arrays.asList(luchadores),0,1);
+					}else {
+						int num= (int) (Math.random() * 99) + 1;
+						if(((luchadores[0].getVelocitat()+luchadores[0].getArma().getPlusVelocitat())-(luchadores[1].getVelocitat()+luchadores[1].getArma().getPlusVelocitat()))*10>num){
+							consola.append("\n" + luchadores[0].getNom()+" torna a atacar!!");
+						}else {
+							Collections.swap(Arrays.asList(luchadores),0,1);
+						}
+					}delay(1000);
+				}
+			}
+			else if(luchadores[0].getAgilitat()<luchadores[1].getAgilitat()) {
+				Collections.swap(Arrays.asList(luchadores),0,1);
+				while(luchadores[0].getPuntsVida()>0 && luchadores[1].getPuntsVida()>0) {
+					consola.append("\n" + "Torn de "+luchadores[0].getNom());
+					int exit= (int) (Math.random() * 99) + 1;
+					if(luchadores[0].getAgilitat()*10>exit) {
+						consola.append("\n" + "L'atac ha tingut exit!!");
+						int esquivar= (int) (Math.random() * 49) + 1;
+						if(luchadores[0].getAgilitat()>esquivar) {
+							consola.append("\n" + "El defensor ha esquivat l'atac!!");
+						}else {
+							int dany = (luchadores[0].getForça()+luchadores[0].getArma().getPlusForça())-luchadores[1].getDefensa();
+							consola.append("\n" + "El defensor ha rebut "+dany+" punts de dany!!");
+							luchadores[1].setPuntsVida(luchadores[1].getPuntsVida()-dany);
+						}
+					}else {consola.append("\n" + "L'atac no s'ha pogut efectuar, no ha tingut exit!!");}
+					if(luchadores[0].getVelocitat()+luchadores[0].getArma().getPlusVelocitat() <= luchadores[1].getVelocitat()+luchadores[1].getArma().getPlusVelocitat()) {
+						Collections.swap(Arrays.asList(luchadores),0,1);
+					}else {
+						int num= (int) (Math.random() * 99) + 1;
+						if(((luchadores[0].getVelocitat()+luchadores[0].getArma().getPlusVelocitat())-(luchadores[1].getVelocitat()+luchadores[1].getArma().getPlusVelocitat()))*10>num){
+							consola.append("\n" + luchadores[0].getNom()+" torna a atacar!!");
+						}else {
+							Collections.swap(Arrays.asList(luchadores),0,1);
+						}
+					}delay(1000);
+				}
+				
+			}
+			else {
+				int atac= (int)Math.round(Math.random());
+				if(atac!=0) {
+				Collections.swap(Arrays.asList(luchadores),0,1);
+				}
+				while(luchadores[0].getPuntsVida()>0 && luchadores[1].getPuntsVida()>0) {
+					consola.append("\n" + "Torn de "+luchadores[0].getNom());
+					int exit= (int) (Math.random() * 99) + 1;
+					if(luchadores[0].getAgilitat()*10>exit) {
+						consola.append("\n" + "L'atac ha tingut exit!!");
+						int esquivar= (int) (Math.random() * 49) + 1;
+						if(luchadores[0].getAgilitat()>esquivar) {
+							consola.append("\n" + "El defensor ha esquivat l'atac!!");
+						}else {
+							int dany = (luchadores[0].getForça()+luchadores[0].getArma().getPlusForça())-luchadores[1].getDefensa();
+							consola.append("\n" + "El defensor ha rebut "+dany+" punts de dany!!");
+							luchadores[1].setPuntsVida(luchadores[1].getPuntsVida()-dany);	
+						}
+					}else {consola.append("\n" + "L'atac no s'ha pogut efectuar, no ha tingut exit!!");}
+					if(luchadores[0].getVelocitat()+luchadores[0].getArma().getPlusVelocitat() <= luchadores[1].getVelocitat()+luchadores[1].getArma().getPlusVelocitat()) {
+						Collections.swap(Arrays.asList(luchadores),0,1);
+					}else {
+						int num= (int) (Math.random() * 99) + 1;
+						if(((luchadores[0].getVelocitat()+luchadores[0].getArma().getPlusVelocitat())-(luchadores[1].getVelocitat()+luchadores[1].getArma().getPlusVelocitat()))*10>num){
+							consola.append("\n" + luchadores[0].getNom()+" torna a atacar!!");
+						}else {
+							Collections.swap(Arrays.asList(luchadores),0,1);
+						}
+					}delay(1000);
+				}
+		
+			}
+		}
+		
+		if(warrioreal.getPuntsVida() > 0) {
+			consola.append("\n" + "=".repeat(20));
+			consola.append("\n" + "El guerrer " + warrioreal.getNom()+ " de l'usuari " + nomUsuari + "és el guanyador!!");
+			consola.append("\n" + "=".repeat(20));
+		}else {
+			consola.append("\n" + "=".repeat(20));
+			consola.append("\n" + "El guerrer " + warriorbot.getNom()+ " de l'usuari bot és el guanyador!!");
+			consola.append("\n" + "=".repeat(20));
+		}
+		
+		delay(3000);
+		
+		// Es mostra un missatge on es pregunta si vol continuar jugant o no
+		
+		String message = "Do you want to keep fighting?";
+		int option = JOptionPane.showOptionDialog(null, message, "Keep Fighting", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, new Object[]{"Yes", "No"}, "Yes");
+		
+		// Si l'opció es "YES", és a dir, continuar lluitant es farà això 
+		
+		if (option == JOptionPane.YES_OPTION) {
+			
+			// Si ha guanyat
+			
+			if (warrioreal.getPuntsVida() > 0) {
+				
+				// Reseteja la vida del personatge i del contrincant
+			    warrioreal.setPuntsVida(vidaInicialWarriorReal);
+				warriorbot.setPuntsVida(vidaInicialWarriorBot);
+				
+			    // Selecciona un nuevo contrincante aleatorio con un arma aleatoria
+				warriorbot = seleccionarRandomWarrior(warriorContainer.getArrayListWarrior());
+				inicialitzarImatges(warrioreal.getUrlImatge(), warriorbot.getUrlImatge(), esInici);
+
+			    // Acumula la puntuació
+				//puntuacio += puntuacio;
+			    
+			// Si ha perdut	
+			
+			} else {
+				// Guarda la puntuació en la base de datos
+			    insertBattleBD(playerId, warrioreal.getId(), warrioreal.getArma().getId(), warriorbot.getId(), warriorbot.getArma().getId(), danyCausat, danyRebut, puntuacio);
+
+			    // Reseteja els stats del personatge i del contrincant
+			    warrioreal.setPuntsVida(vidaInicialWarriorReal);
+				warriorbot.setPuntsVida(vidaInicialWarriorBot);
+
+				// Elimina l'arma seleccionada
+			    warrioreal.setArma(null);
+			    warriorbot.setArma(null);
+				
+			    // Muestra una imatge indicant que no has triat cap warrior
+			    warriorbot = seleccionarRandomWarrior(warriorContainer.getArrayListWarrior());
+			    esInici = true;
+				inicialitzarImatges("imagenes/anonim.jpg", warriorbot.getUrlImatge(), esInici);	
+			}
+			
+		// Si l'opció és "NO", és a dir, no vol continuar lluitant es farà això
+		  
+		} else {
+			// Guarda la puntuació en la base de dades
+			insertBattleBD(playerId, warrioreal.getId(), warrioreal.getArma().getId(), warriorbot.getId(), warriorbot.getArma().getId(), danyCausat, danyRebut, puntuacio);
+			
+			// Finalitza l'aplicació
+		    System.exit(0);
+		}
+	}
+	
+	// Aquest mètode fa l'aturada del temps
+	
+	public void delay(long milis){
+		
+		try {
+			Thread.sleep(milis);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// Aquest mètode inserta les dades a la taula battle
+	
+	public void insertBattleBD(int playerId, int warriorId, int warriorWeaponId, int opponentId, int opponentWeaponId, int injuriesCaused, int injuriesSuffered, int battlePoints) {
+        
+		String query = "INSERT INTO battle (player_id, warrior_id, warrior_weapon_id, opponent_id, "
+                + "opponent_weapon_id, injuries_caused, injuries_suffered, battle_points) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try {
+        	stmt = conn.prepareStatement(query);
+            
+        	stmt.setInt(1, playerId);
+        	stmt.setInt(2, warriorId);
+        	stmt.setInt(3, warriorWeaponId);
+        	stmt.setInt(4, opponentId);
+        	stmt.setInt(5, opponentWeaponId);
+        	stmt.setInt(6, injuriesCaused);
+        	stmt.setInt(7, injuriesSuffered);
+        	stmt.setInt(8, battlePoints);
+
+        	stmt.executeUpdate();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+	
+	// Aquest mètode crea els progressBar
+	
+	public void insertPlayer(String playerName) {
+		
+        String query = "INSERT INTO players (player_name) VALUES (?)";
+
+        try {
+            stmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+            stmt.setString(1, playerName);
+
+            stmt.executeUpdate();
+            
+            ResultSet generatedKeys = stmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                playerId = generatedKeys.getInt(1);
+                System.out.println(playerId);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+	
 	
 }

@@ -33,7 +33,7 @@ public class WarriorContainer {
     
     public void carregarWarriorsFromDB() {
     	
-    	String urlDatos = "jdbc:mysql://localhost/batalla?serverTimezone=UTC";
+    	String urlDatos = "jdbc:mysql://localhost/battlerace?serverTimezone=UTC";
 		String usuario = "root";
 		String pass = "1234";
         Connection conn = null;
@@ -56,31 +56,31 @@ public class WarriorContainer {
                 int defensa = rs.getInt(7);
                 String urlImatge = rs.getString(8);
                 String type = rs.getString(9);
+                int raca = rs.getInt(10);
                 
                 switch (type) {
                 
                     case "huma":
-                    	Warrior huma = new Warrior(id, name, puntsVida, força, velocitat, agilitat, defensa, urlImatge, type);
+                    	Warrior huma = new Warrior(id, name, puntsVida, força, velocitat, agilitat, defensa, urlImatge, type, raca);
                         warriors.add(huma);
                         break;
                         
                     case "nan":
-                    	Warrior nan = new Warrior(id, name, puntsVida, força, velocitat, agilitat, defensa, urlImatge, type);
+                    	Warrior nan = new Warrior(id, name, puntsVida, força, velocitat, agilitat, defensa, urlImatge, type, raca);
                         warriors.add(nan);
                         break;
                         
                     case "elf":
-                    	Warrior elf = new Warrior(id, name, puntsVida, força, velocitat, agilitat, defensa, urlImatge, type);
+                    	Warrior elf = new Warrior(id, name, puntsVida, força, velocitat, agilitat, defensa, urlImatge, type, raca);
                         warriors.add(elf);
                         break;
                         
                     default:
-                        System.out.println("Arma desconeguda: " + name);
+                        System.out.println("Guerrer desconegut: " + name);
                         break;
                 }
             }
-            
-            System.out.println("S'ha creat la connexio y l'arryList warriors");
+          
             
         } catch (SQLException e) {
         	
