@@ -57,6 +57,7 @@ class VentanaPrincipal extends JFrame{
 	private Image imagen, imagenRedimensionada;
 	private ArrayList<String> textArmes;
 	private ArrayList<JLabel> labelArmes;
+	private ArrayList<String> urlArmes;
     private WarriorContainer warriorContainer;
     private WeaponContainer weaponContainer;
     private int warriorSeleccionat;
@@ -230,54 +231,107 @@ class VentanaPrincipal extends JFrame{
 				public void actionPerformed(ActionEvent e) {
 					
 					if (aTriatWarrior) { 
-						ventana3 = new JFrame("Selecció d'armes");
-
-						ventana3.setLayout(new GridLayout(3, 6));
 						
-						textArmes = new ArrayList<String>();
-						labelArmes = new ArrayList<JLabel>();
-						
-						textArmes.add("Daga");
-				        textArmes.add("Espasa");
-				        textArmes.add("Destral");
-				        textArmes.add("Espases dobles");
-				        textArmes.add("Simitarra");
-				        textArmes.add("Arc");
-				        textArmes.add("Katana");
-				        textArmes.add("Punyal");
-				        textArmes.add("Destral de dues mans");
-				        
-				        for (String text : textArmes) {
-				            JLabel labelAr = new JLabel(text);
-				            labelAr.setHorizontalAlignment(JLabel.CENTER);
-				            labelAr.setVerticalAlignment(JLabel.CENTER);
-				            labelArmes.add(labelAr);
-				        }
-						
-						for (int i = 1; i <= 9; i++) {
-				            String imagenPath = "imagenes/we" + i + ".jpg";
-				            ImageIcon imagenOriginal = new ImageIcon(imagenPath);
-				            imagen = imagenOriginal.getImage();
-				            int anchoNuevo = 80;
-				            int altoNuevo = 100;
-				            imagenRedimensionada = imagen.getScaledInstance(anchoNuevo, altoNuevo, Image.SCALE_SMOOTH);
-				            imagenFinal = new ImageIcon(imagenRedimensionada);
-				            JLabel label = new JLabel(imagenFinal);
-				            label.addMouseListener(new MouseAdapter() {
-				                @Override
-				                public void mouseClicked(MouseEvent e) {
-				                    String nombreImagen = imagenPath;
-				                    consola.setText("Se hizo clic en la imagen arma: " + nombreImagen);
-				                    armesDisponibles(nombreImagen);
+						try {
+							
+							textArmes = new ArrayList<String>();
+							labelArmes = new ArrayList<JLabel>();
+							urlArmes = new ArrayList<String>();
+							
+				            conn = DriverManager.getConnection(urlDatos, usuario, pass);
+				            String query = "SELECT weapon_id FROM weapons_available WHERE warrior_id = ?";
+				            stmt = conn.prepareStatement(query);
+				            stmt.setInt(1, warriorSeleccionat);
+				            rs = stmt.executeQuery();
+				            
+				            ArrayList<Integer> armesDisponiblesWarrior1 = new ArrayList<>();
+				            while (rs.next()) {
+				                int weaponId = rs.getInt("weapon_id");
+				                armesDisponiblesWarrior1.add(weaponId);
+				            }
+				            
+				            for (Weapon j : weaponContainer.getArrayListWeapons()) {
+				                if (armesDisponiblesWarrior1.contains(j.getId())) {
+				                    // Obtén la URL del arma y el nombre del arma
+				                    String urlsArma = j.getUrlImatge();
+				                    String nombreArma = j.getName();
+				                    
+				                    // Agrega el nombre del arma a la lista textArmes y url a la lista urlArmes
+				                    textArmes.add(nombreArma);
+				                    urlArmes.add(urlsArma);
+				                    
+				                    // Crea una JLabel con el nombre del arma
+				                    JLabel labelAr = new JLabel(nombreArma);
+				                    labelAr.setHorizontalAlignment(JLabel.CENTER);
+				                    labelAr.setVerticalAlignment(JLabel.CENTER);
+				                    
+				                    // Agrega la JLabel a la lista labelArmes
+				                    labelArmes.add(labelAr);
 				                }
-				            });
-				            ventana3.add(labelArmes.get(i - 1));
-				            ventana3.add(label);
+				            }
+				            
+				            ventana3 = new JFrame("Selecció d'armes");
+				            
+				            // Obtén el tamaño del GridLayout basado en la cantidad de armas disponibles
+				            int cantidadArmas = labelArmes.size();
+				            int filas = (int) Math.ceil(cantidadArmas / 3.0);  // Ajusta el número de columnas según tus necesidades
+
+				            // Crea el GridLayout con el tamaño calculado
+				            ventana3.setLayout(new GridLayout(filas, 3));
+				            
+				            for (int i = 0; i < labelArmes.size(); i++) {
+							    String imagenPath = urlArmes.get(i);
+							    ImageIcon imagenOriginal = new ImageIcon(imagenPath);
+							    imagen = imagenOriginal.getImage();
+							    int anchoNuevo = 80;
+							    int altoNuevo = 100;
+							    imagenRedimensionada = imagen.getScaledInstance(anchoNuevo, altoNuevo, Image.SCALE_SMOOTH);
+							    imagenFinal = new ImageIcon(imagenRedimensionada);
+							    JLabel label = new JLabel(imagenFinal);
+							    label.addMouseListener(new MouseAdapter() {
+
+							        @Override
+							        public void mouseClicked(MouseEvent e) {
+							        	
+							        	Weapon weaponTriat = null;
+							        	
+							        	for (Weapon u: weaponContainer.getArrayListWeapons()) {
+							    			
+							    			if (u.getUrlImatge().equals(imagenPath)) {
+							    				
+							    				weaponTriat = u;
+							    				// Mostrar estadísticas del arma
+							    				String message = "Plus força: " + u.getPlusForça() + "\nPlus velocitat: " + u.getPlusVelocitat();
+							    				int option = JOptionPane.showOptionDialog(null, message, "Estadístiques de l'arma", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
+							    				
+							    				// Verificar si el usuario ha hecho clic en el botón "OK"
+							    				if (option == JOptionPane.OK_OPTION) {
+							    				    // El usuario ha hecho clic en el botón "OK"
+							    					consola.setText("Se hizo clic en la imagen arma: " + imagenPath);
+										            aTriatWeapon = true;
+							    					imatgeWeapon1 = new ImageIcon(imagenPath);
+							    					imatge3.setIcon(imatgeWeapon1);
+							    					actualitzarValorsWarriorTriat2(warriorSeleccionat, weaponTriat);
+							    					ventana3.dispose();
+							    				}
+							    			}
+							    		}
+				 
+							        }
+							    });
+							    ventana3.add(labelArmes.get(i));
+							    ventana3.add(label);
+							}
+
+							
+							ventana3.setSize(800, 650);
+							ventana3.setVisible(true);
+
+				            
+				        } catch (SQLException u) {
+				        	System.out.println("No s'ha pogut crear la connexió");
 				        }
-						
-						ventana3.setSize(800, 650);
-						ventana3.setVisible(true);
-						
+	
 					} else {
 						
 						consola.setText("Primer has de triar un guerrer abans de triar l'arma");	
@@ -675,44 +729,6 @@ class VentanaPrincipal extends JFrame{
 			
 			}
 		}
-	}
-	
-	// Aquest mètode ompla un array amb les armes que té disponible el warrior i verifica si la que ha triat està disponible o no
-	
-	public void armesDisponibles(String url) {
-
-        try {
-            conn = DriverManager.getConnection(urlDatos, usuario, pass);
-            String query = "SELECT weapon_id FROM weapons_available WHERE warrior_id = ?";
-            stmt = conn.prepareStatement(query);
-            stmt.setInt(1, warriorSeleccionat);
-            rs = stmt.executeQuery();
-            
-            ArrayList<Integer> armesDisponiblesWarrior1 = new ArrayList<>();
-            while (rs.next()) {
-                int weaponId = rs.getInt("weapon_id");
-                armesDisponiblesWarrior1.add(weaponId);
-            }
-            
-            for (Weapon e: weaponContainer.getArrayListWeapons()) {
-    			
-    			if (e.getUrlImatge().equals(url)) {
-    				
-    				if (armesDisponiblesWarrior1.contains(e.getId())) {
-    					aTriatWeapon = true;
-    					imatgeWeapon1 = new ImageIcon(url);
-    					imatge3.setIcon(imatgeWeapon1);
-    					actualitzarValorsWarriorTriat2(warriorSeleccionat, e);
-    				} else {
-    					consola.setText("Aquesta arma no está disponible per aquest guerrer. Tria un altre.");
-    				}
-    			}
-    		}
-            
-        } catch (SQLException e) {
-        	System.out.println("No s'ha pogut crear la connexió");
-        }
-       
 	}
 	
 	// Aquest mètode inicia la lluita
