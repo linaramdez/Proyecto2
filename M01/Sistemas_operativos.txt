@@ -1,1 +1,36 @@
+Especificacions funcionals
+M01 Sistemes informàtics
+6 de 21
+El mòdul de sistemes informàtics té com objectiu en aquest projecte l’elaboració del
+manual d’usuari del joc i de la documentació tècnica referida al recull i resolució
+d’incidències i assistència tècnica.
+Concretament, es demana:
+1. Un manual d’usuari del joc: Aquest manual té com objectiu facilitar a l’usuari
+l’ús i aprenentatge del joc desenvolupat. Ha de contenir informació sobre totes
+les operacions bàsiques que el joc ofereix, així com captures de pantalla útils pel
+seguiment de l’explicació. També haurà de recollir els possibles errors que
+poden aparèixer en el joc si no es compleixen les especificacions correctes.
+2. Informe tècnic del projecte: Aquest informe haurà d’estar elaborat pels
+següents continguts:
+a. Portada
+b. Índex
+c. Resum del projecte
+d. Tecnologia aplicada (llenguatges de programació, SO, BBDD..)
+e. Incidències tècniques i la seva resolució
+f. Propostes de millora
+g. Valoració personal del projecte
+3. Presentació Power Point per l’exposició.
 
+Especificacions no funcionals
+M01 Sistemes informàtics
+El format de l’informe haurà de ser en PDF i s’haurà d’entregar un per grup.
+El format de la presentació haurà de ser en PPT i s’haurà d’entregar un per grup. 
+
+Normativa i criteris d’avaluació i correccions
+M01 Sistemes informàtics
+17 de 21
+Es valorarà que l’informe contingui tots els continguts desenvolupats amb un vocabulari
+tècnic i rigorós.
+Es partirà d’un 10 (+1 punt adicional si s’afegeix a l’informe un Diagrama de Grant o
+qualsevol altre indicador temporal de realització del projecte (per exemple, MS Project,
+Excel diagrama de Grant…). 
