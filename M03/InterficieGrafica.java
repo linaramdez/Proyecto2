@@ -1,4 +1,4 @@
-package Proyect;
+package proyecto2;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -64,7 +64,8 @@ class VentanaPrincipal extends JFrame{
 	private ArrayList<JLabel> labelArmes;
     private WarriorContainer warriorContainer;
     private WeaponContainer weaponContainer;
-    private int warriorSeleccionat,players, puntuacio=0, danyCausat=0, danyRebut=0,batallesGuanyades,playerId= -1;
+    private int warriorSeleccionat, puntuacio=0, danyCausat=0, danyRebut=0,batallesGuanyades,playerId;
+    private int playersId;
     private Warrior warrioreal,warriorbot;
     private String nombre,nomUsuari= "",urlDatos = "jdbc:mysql://localhost/battleRace?serverTimezone=UTC",usuario = "root", pass = "1234";;
     private boolean aTriatWarrior = false, aTriatWeapon= false, esInici= false,posible=true;
@@ -462,7 +463,7 @@ class VentanaPrincipal extends JFrame{
 			while (rs.next()) {
 			n++;
 			
-			players = rs.getInt("player_id");
+			playersId = rs.getInt("player_id");
 			
 			nombre = rs.getString("player_name");
 
@@ -475,7 +476,7 @@ class VentanaPrincipal extends JFrame{
 			danyRebut = rs.getInt("total_damage_taken");
 
 
-			JLabel playerIdLabel = new JLabel(Integer.toString(players));
+			JLabel playerIdLabel = new JLabel(Integer.toString(playersId));
 			playerIdLabel.setOpaque(true);
 			playerIdLabel.setBackground(new Color((color.getRed()+231)%256,(color.getGreen()+235)%256,(color.getBlue()+218)%256));
 	
@@ -1195,7 +1196,7 @@ class VentanaPrincipal extends JFrame{
 			} else {
 				// Save the score in the database
 			    insertBattleBD(playerId, warrioreal.getId(), warrioreal.getArma().getId(), warriorbot.getId(), warriorbot.getArma().getId(), danyCausat, danyRebut, puntuacio);
-
+			    
 			    // Resets character and opponent stats
 			    warrioreal.setPuntsVida(vidaInicialWarriorReal);
 				warriorbot.setPuntsVida(vidaInicialWarriorBot);
@@ -1257,7 +1258,6 @@ class VentanaPrincipal extends JFrame{
         	stmt.setInt(6, injuriesCaused);
         	stmt.setInt(7, injuriesSuffered);
         	stmt.setInt(8, battlePoints);
-
         	stmt.executeUpdate();
             
         } catch (SQLException e) {
