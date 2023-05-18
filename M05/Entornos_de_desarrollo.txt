@@ -1,1 +1,32 @@
+Especificacions funcionals
 
+● Control de versions:
+○ El projecte ha d'estar gestionat des del primer dia en Github.
+○ El projecte tindrà a l’arrel una carpeta per a cada un dels mòduls (M1, M2,
+M3 etc).
+○ El projecte tindrà un fitxer "README.md" amb la definició i instruccions
+per a la instal·lació i utilització del projecte. Així com també la informació
+de contacte dels seus autors (email, twitter, etc.).
+○ Cada alumne crearà i utilitzarà la seva pròpia branca de treball. La branca
+de treball portarà el seu nom.
+○ Cada alumne farà un mínim de 5 commits al projecte de Github.
+● Es realitzaran dos diagrames: un de casos d’ús i un d’activitats.
+
+Especificacions no funcionals
+
+● La branca principal del projecte de GitHub ha de dir-se "main".
+● Hi haurà una branca anomenada "pre-producció" on es faran els "merge"
+necessaris abans de pujar canvis a la branca principal.
+● El lliurament final de el projecte, a part de lliurar-se en els cursos de moodle
+d'altres mòduls, també es farà en GitHub a través d'una "release".
+● La “release” la durà a terme el propietari de la repo.
+● Es lliurarà la URL de la "release" en una tasca habilitada per a tal fi en el curs del
+Moodle. 
+
+Criteris d'Avaluació
+
+La correcta utilització de l'eina GitHub.
+● El disseny i aspecte general del diagrames (casos d’ús i d’activitats).
+● La facilitat de lectura dels diagrames.
+● La puntuació de el projecte estarà composta per 40% el ús del control de
+versions (GitHub) i 60% els Diagrames. 
