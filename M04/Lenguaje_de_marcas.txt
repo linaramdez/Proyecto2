@@ -1,1 +1,29 @@
+Especificaciones funcionales
+
+Fent servir Python, exportar la taula “Battle” de la base de dades en un arxiu XML i fer
+un parseig XSL per veure aquestes dades en una pàgina web HTML
+La taula “Battle” visualitzada en format HTML ha de contenir totes les dades de la taula
+original presentades adequadament per Desktop i mòbil.
+
+Especificaciones no funcionales
+
+M04 Llenguatge de marques
+A la carpeta M4 del github hi ha d'haver:
+- El codi python per obtenir les dades de la bbdd en un arxiu XML
+- L’arxiu “battle.xml” resultant d’executar el codi anterior
+- L’arxiu “template.xsl” per transformar l’arxiu anterior en un arxiu HTML
+- El codi python per transformar l’arxiu xml en html a través de xsl
+- L'arxiu “battle.html” resultant d’executar el codi anterior
+Els arxius python s’han de poder executar amb línia de comandes
+L’estructura del projecte és:
+- dataToXml.py
+- xmlToHtml.py
+- Carpeta “html” amb “battle.html” (i els arxius css convenients)
+- Carpeta “xml” amb l’arxiu “battle.xml” i l’arxiu “template.xsl”
+
+Criterios de evaluación
+- Exportar la taula de la base de dades a un arxiu XML 3 punts
+- Transformar l’arxiu XML anterior cap a HTML fent servir XSL 5 punts
+- Visualitzar correctament el resultat en Desktop i Mòbil 2 punts
+
 

@@ -1,1 +1,69 @@
+Especificaciones funcionales
 
+En M02, s’entrarà en el projecte fent ús d’una BD que donarà suport al joc. Aquesta serà
+una BD MySQL.
+L'aplicació ha de ser capaç de connectar-se i extreure les dades de la BBDD per a
+poder proporcionar al joc la informació necessària:
+● personatges, armes, puntuació
+L'aplicació ha de ser capaç de poder guardar informació de cada batalla i cada ronda a
+la BD:
+● Jugador, guerrers (escollit i enemic), danys (realitzat i rebut) i puntuació
+Per així poder mostrar-la quan el jugador premi el botó RANKING, el ranking pot ser
+quelcom com :
+- puntuació global
+- enemics derrotats, quantes batalles ha guanyat el jugador
+- dany realitzat, quants punts ha guanyat en cada ronda de cada batalla
+7 de 21
+- dany rebut, quants punts ha cedit en cada ronda de cada batalla
+
+Especificaciones funcionales
+
+Ha d'estar creada en local.
+La BBDD de dades ha de tenir com a mínim les següents taules:
+TAULES DE CONFIGURACIÓ
+TABLE ATRIBUTS
+WEAPONS WEAPON_ID
+WEAPON_NAME
+WEAPON_IMAGE_PATH, nom de la imatge a la carpeta
+d'imatges
+...
+WARRIORS WARRIOR_ID
+WARRIOR_NAME
+WARRIOR_IMAGE_PATH, nom de la imatge a la carpeta
+d'imatges
+…
+PLAYERS PLAYER_ID
+PLAYER_NAME
+…...
+15 de 21
+Hi ha armes que només poden fer servir segons quin tipus de guerrer. Per saber quin
+tipus d’arma pot fer servir cada guerrer es pot muntar una taula com la següent:
+WEAPONS-AVAILABLE WARRIOR_ID
+WEAPON_ID
+per exemple en aquesta taula caldria donar d’alta les
+següents armes pel tipus de guerrer ELF: Daga, Espasa,
+Espases dobles, Simitarra, Punyal
+TAULES DE BATALLA
+TABLE ATRIBUTS
+BATTLE BATTLE_ID
+PLAYER_ID
+WARRIOR_ID el guerrer que ha triat el jugador
+WARRIOR_WEAPON_ID l’arma que ha triat el jugador
+OPPONENT_ID l’oponent assignat aleatòriament pel sistema
+OPPONENT_WEAPON_ID l’arma que ha assignat el sistema
+INJURIES_CAUSED mal infringit a l’oponent
+INJURIES_SUFFERED mal infringit pel oponent
+BATTLE_POINTS punts que ha obtingut el jugador , amb aquell
+guerrer en concret, a la batalla
+...
+
+Criterios de calificación
+
+Suposant una puntuació de partida de 10 (+1 punt addicional si tot està en anglès)
+s’aplicaran les següents penalitzacions.
+PENALITZACIÓ PUNTS
+NO tenir taules de configuració 2,0
+NO tenir dades a les taules de configuració 2,0
+NO tenir taules de batalla 2,0
+NO guardar les batalles 2,0
+NO consultar el resultat global de la batalla 2,0
