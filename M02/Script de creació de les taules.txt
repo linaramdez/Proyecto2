@@ -1,0 +1,54 @@
+create database battleRace;
+
+use battleRace;
+
+create table weapons(
+ weapon_id INT PRIMARY KEY NOT NULL,
+ weapon_name varchar(100) NOT NULL,
+ weapon_image_path varchar(100) NOT NULL,
+ speed INT,
+ power INT,
+ points INT
+);
+
+create table warriors(
+ warrior_id INT PRIMARY KEY NOT NULL,
+ warrior_name varchar(100) NOT NULL,
+ life INT,
+ power INT,
+ speed INT,
+ agility INT,
+ defense INT,
+ warrior_image_path varchar(100) NOT NULL,
+ warrior_type varchar(100) NOT NULL,
+ race INT
+);
+
+create table players(
+player_id INT auto_increment KEY NOT NULL,
+player_name varchar(100) NOT NULL
+);
+
+create table weapons_available(
+ warrior_id INT,
+ weapon_id INT,
+ FOREIGN KEY(warrior_id) REFERENCES warriors(warrior_id),
+ FOREIGN KEY(weapon_id) REFERENCES weapons(weapon_id)
+);
+
+create table battle(
+battle_id INT auto_increment PRIMARY KEY NOT NULL,
+player_id INT,
+warrior_id INT,
+warrior_weapon_id INT,
+opponent_id INT,
+opponent_weapon_id INT,
+injuries_caused INT,
+injuries_suffered INT,
+battle_points INT,
+FOREIGN KEY(player_id) REFERENCES players(player_id),
+FOREIGN KEY(warrior_id) REFERENCES warriors(warrior_id),
+FOREIGN KEY(warrior_weapon_id) REFERENCES weapons(weapon_id),
+FOREIGN KEY(opponent_id) REFERENCES warriors(warrior_id),
+FOREIGN KEY(opponent_weapon_id) REFERENCES weapons(weapon_id)
+);
